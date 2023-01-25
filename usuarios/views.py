@@ -2,6 +2,8 @@ from django.shortcuts import render
 from django.contrib.auth.models import User
 from django.contrib import messages
 from django.contrib.messages import constants
+from django.contrib.auth import authenticate, login
+from django.shortcuts import redirect
 
 
 def cadastro(request):
@@ -31,3 +33,23 @@ def cadastro(request):
         except:
             messages.add_message(request, constants.ERROR, 'Erro interno no sistema.')
             return render(request, 'cadastro.html')
+
+
+def logar(request):
+    if request.method == 'GET':
+        return render(request, 'login.html')
+    elif request.method == 'POST':
+        nome = request.POST.get('nome')
+        senha = request.POST.get('senha')
+
+        user = authenticate(
+            username=nome,
+            password=senha,
+        )
+
+        if user is not None:
+            login(request, user)
+            return redirect('/divulgar/novo_pet')
+        else:
+            messages.add_message(request, constants.ERROR, 'Usuário ou senha incorreta!')
+            return render(request, 'login.html')
