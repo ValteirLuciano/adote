@@ -2,11 +2,14 @@ from django.shortcuts import render
 from django.contrib.auth.models import User
 from django.contrib import messages
 from django.contrib.messages import constants
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import redirect
 
 
 def cadastro(request):
+    if request.user.is_authenticated:
+        return redirect('/divulgar/novo_pet')
+
     if request.method == "GET":
         return render(request, 'cadastro.html')
     elif request.method == "POST":
@@ -36,6 +39,9 @@ def cadastro(request):
 
 
 def logar(request):
+    if request.user.is_authenticated:
+        return redirect('/divulgar/novo_pet')
+
     if request.method == 'GET':
         return render(request, 'login.html')
     elif request.method == 'POST':
@@ -53,3 +59,7 @@ def logar(request):
         else:
             messages.add_message(request, constants.ERROR, 'Usuário ou senha incorreta!')
             return render(request, 'login.html')
+
+def sair(request):
+    logout(request)
+    return redirect('/auth/login')
