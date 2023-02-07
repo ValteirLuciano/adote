@@ -4,6 +4,7 @@ from django.contrib.auth.decorators import login_required
 from .models import Tag, Raca, Pet
 from django.contrib import  messages
 from django.contrib.messages import constants
+from django.shortcuts import redirect
 
 
 # Create your views here.
@@ -56,6 +57,7 @@ def novo_pet(request):
             tags = Tag.objects.all()
             racas = Raca.objects.all()
             messages.add_message(request, constants.SUCCESS, 'Novo pet cadastrado com sucesso!')
+            return redirect('/divulgar/seus_pets')
 
             context = {
                 'tags': tags,
@@ -63,12 +65,32 @@ def novo_pet(request):
             }
 
             return render(request, 'novo_pet.html', context)
+
+
 @login_required
 def seus_pets(request):
-    if request.method == 'GET':
-        pets = Pet.objects.filter(usuario=request.user)
+   if request.method == 'GET':
+       pets = Pet.objects.filter(usuario=request.user)
 
-        context = {
-            'pets': pets
-        }
-        return render(request, 'seus_pets.html', context)
+
+       context = {
+           'pets': pets
+       }
+       return render(request, 'seus_pets.html', context)
+
+
+@login_required
+def remover_pet(request, id):
+    pet = Pet.objects.get(id=id)
+
+    if not pet.usuario == request.user:
+        messages.add_message(request, constants.ERROR, 'Esse pet não é seu!')
+        return redirect('/divulgar/seus_pets')
+
+    pet.delete()
+
+    messages.add_message(request, constants.SUCCESS('Pet removido com sucesso!'))
+    return redirect('/divulgar/seus_pets')
+
+
+
