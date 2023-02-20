@@ -9,5 +9,6 @@ urlpatterns = [
     path('auth/', include('usuarios.urls')),
     path('divulgar/', include('divulgar.urls')),
     path('adotar/', include('adotar.urls')),
+    path('', logar, name='login'),
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
